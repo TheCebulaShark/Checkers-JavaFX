@@ -8,6 +8,4 @@ public enum PieceColor {
     PieceColor(int moveDir) {
         this.moveDir = moveDir;
     }
-
-
 }

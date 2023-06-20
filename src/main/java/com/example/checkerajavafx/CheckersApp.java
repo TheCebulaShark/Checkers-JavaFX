@@ -15,6 +15,15 @@ public class CheckersApp extends Application {
     Menu menu;
     Board board;
 
+    private static GameMode mode;
+    private static TwoPlayersOneComputerGame twoPlayersOneComputerGame;
+
+    public enum GameMode {
+        TWO_PLAYERS_ONE_COMPUTER,
+        MULTIPLAYER,
+        PLAYER_VS_COMPUTER
+    }
+
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -29,7 +38,12 @@ public class CheckersApp extends Application {
         }
     }
 
-    public void startGame() {
+    public void initGame() {
+        menu.hideButtons();
+        if (mode == GameMode.TWO_PLAYERS_ONE_COMPUTER) {
+            twoPlayersOneComputerGame = new TwoPlayersOneComputerGame(board, menu);
+            twoPlayersOneComputerGame.start();
+        }
     }
 
     private void initLayout(BorderPane root) {
@@ -54,8 +68,6 @@ public class CheckersApp extends Application {
         root.getChildren().add(board.getPiecesGroup());
     }
 
-
-
     private EventHandler<ActionEvent> multiPlayerModeChosen() {
         return new EventHandler<ActionEvent>() {
             @Override
@@ -69,9 +81,22 @@ public class CheckersApp extends Application {
         return new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
+                mode = GameMode.TWO_PLAYERS_ONE_COMPUTER;
+                initGame();
             }
         };
+    }
+
+    public static void handlePieceClick(Piece piece) {
+        if (mode == GameMode.TWO_PLAYERS_ONE_COMPUTER && twoPlayersOneComputerGame != null) {
+            twoPlayersOneComputerGame.handlePieceClick(piece);
+        }
+    }
+
+    public static void handleTileClick(Tile tile) {
+        if (mode == GameMode.TWO_PLAYERS_ONE_COMPUTER && twoPlayersOneComputerGame != null) {
+            twoPlayersOneComputerGame.handleTileClick(tile);
+        }
     }
 
     private EventHandler<ActionEvent> hostServerChosen() {
@@ -122,5 +147,9 @@ public class CheckersApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public GameMode getMode() {
+        return mode;
     }
 }

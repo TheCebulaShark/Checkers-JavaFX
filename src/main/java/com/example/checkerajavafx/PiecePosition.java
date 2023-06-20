@@ -17,4 +17,3 @@ public class PiecePosition {
         return y;
     }
 }
-
