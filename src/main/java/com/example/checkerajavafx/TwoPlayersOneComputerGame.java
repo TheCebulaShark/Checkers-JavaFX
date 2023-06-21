@@ -1,6 +1,10 @@
 package com.example.checkerajavafx;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+
 import java.util.List;
 
 public class TwoPlayersOneComputerGame {
@@ -13,6 +17,9 @@ public class TwoPlayersOneComputerGame {
     private Piece selectedPiece;
 
     private Tile selectedTile;
+
+    private int timerSec;
+    private Timeline timer;
     private boolean isGameOver;
     private boolean wasCaptured;
     private boolean isPossibleMultiCapture;
@@ -27,6 +34,15 @@ public class TwoPlayersOneComputerGame {
     }
 
     public void start() {
+        timerSec = 0;
+        timer = new Timeline(
+            new KeyFrame(Duration.seconds(1), event -> {
+                timerSec++;
+                displayTimer();
+            })
+        );
+        timer.setCycleCount(Timeline.INDEFINITE);
+
         startTurn();
     }
 
@@ -43,13 +59,47 @@ public class TwoPlayersOneComputerGame {
         startTurn();
     }
 
-    private void checkGameOver() {
+    private void checkGameOverOutOffPieces() {
+        if (board.getAmountOfPiecesLight() == 0 || board.getAmountOfPiecesDark() == 0) {
+            isGameOver = true;
+            timer.stop();
+            menu.hideTimer();
+            if (board.getAmountOfPiecesLight() == 0) {
+                menu.updateText("Wygrywa gracz 2");
+            }
+            else {
+                menu.updateText("Wygrywa gracz 1");
+            }
+        }
+    }
+
+    private void checkGameOverOutOffMoves() {
+        if (possibleMoves.isEmpty()) {
+            isGameOver = true;
+            timer.stop();
+            menu.hideTimer();
+            if (currentPlayerColor == PieceColor.LIGHT) {
+                menu.updateText("Wygrywa gracz 2");
+            }
+            else {
+                menu.updateText("Wygrywa gracz 1");
+            }
+        }
     }
 
     private void startTurn() {
+        timer.stop();
+        timerSec = 0;
+        displayTimer();
         printBoard();
         possibleMoves = PieceMovement.getPossibleMoves(board.getTiles(), currentPlayerColor);
+        checkGameOverOutOffMoves();
         displayPossiblePiecesToMove();
+        timer.play();
+    }
+
+    private void displayTimer() {
+        menu.updateTimer(String.valueOf(timerSec) + " s");
     }
 
     public void printBoard() {
@@ -105,7 +155,7 @@ public class TwoPlayersOneComputerGame {
     }
 
     public void handleTileClick(Tile tile) {
-        if (selectedPiece != null) {
+        if (selectedPiece != null && !isGameOver) {
             int clickedX = tile.getCordX();
             int clickedY = tile.getCordY();
             int pieceX = selectedPiece.getX();
@@ -133,6 +183,7 @@ public class TwoPlayersOneComputerGame {
                                 possibleMoves = nextCaptureMoves;
                                 displayPossibleMoves();
                             }
+                            checkGameOverOutOffPieces();
                             return;
                         }
                         else {
@@ -148,24 +199,25 @@ public class TwoPlayersOneComputerGame {
     }
 
     public void handlePieceClick(Piece piece) {
-        int clickedX = piece.getX();
-        int clickedY = piece.getY();
+        if (!isGameOver) {
+            int clickedX = piece.getX();
+            int clickedY = piece.getY();
 
-        if (selectedPiece == null) {
-            for (PieceMovement move : possibleMoves) {
-                int startX = move.getStartX();
-                int startY = move.getStartY();
+            if (selectedPiece == null) {
+                for (PieceMovement move : possibleMoves) {
+                    int startX = move.getStartX();
+                    int startY = move.getStartY();
 
-                if (startX == clickedX && startY == clickedY) {
-                    selectedPiece = piece;
-                    displayPossibleMoves();
+                    if (startX == clickedX && startY == clickedY) {
+                        selectedPiece = piece;
+                        displayPossibleMoves();
+                    }
                 }
-            }
-        }
-        else {
-            if (clickedX == selectedPiece.getX() && clickedY == selectedPiece.getY()) {
-                selectedPiece = null;
-                displayPossiblePiecesToMove();
+            } else {
+                if (clickedX == selectedPiece.getX() && clickedY == selectedPiece.getY()) {
+                    selectedPiece = null;
+                    displayPossiblePiecesToMove();
+                }
             }
         }
     }

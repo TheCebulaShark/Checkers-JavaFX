@@ -20,12 +20,14 @@ public class Menu {
     private Button joinMultiButton;
     private TextField hostPortField;
     private TextField serverIPAddress;
+    private Label timer;
 
 
     public Menu() {
         paneInit();
         textInit();
         buttonsInit();
+        timerInit();
     }
 
     public void paneInit() {
@@ -42,6 +44,17 @@ public class Menu {
         text.setAlignment(Pos.CENTER);
         text.setTranslateY(TEXT_OFFSET_Y);
         pane.getChildren().add(text);
+    }
+
+    public void timerInit() {
+        timer = new Label("0 s");
+        timer.setMinSize(BUTTONS_WIDTH, BUTTONS_HEIGHT);
+        timer.setFont(Font.font(TEXT_FONT_SIZE));
+        timer.setAlignment(Pos.CENTER);
+        timer.setTranslateX((double)((MENU_WIDTH - BUTTONS_WIDTH) / 2) - BUTTONS_OFFSET_X);
+        timer.setTranslateY(BUTTONS_OFFSET_Y);
+        timer.setVisible(false);
+        pane.getChildren().add(timer);
     }
 
     public void buttonsInit() {
@@ -109,6 +122,13 @@ public class Menu {
         serverIPAddress.setVisible(false);
     }
 
+    public void hideTimer() {
+        timer.setVisible(false);
+    }
+    public void showTimer() {
+        timer.setVisible(true);
+    }
+
     public String getHostPort() {
         return hostPortField.getText();
     }
@@ -135,6 +155,10 @@ public class Menu {
 
     public void updateText(String text) {
         this.text.setText(text);
+    }
+
+    public void updateTimer(String text) {
+        this.timer.setText(text);
     }
 
     public StackPane getPane() {

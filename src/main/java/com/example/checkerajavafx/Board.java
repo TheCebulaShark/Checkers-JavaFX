@@ -10,9 +10,14 @@ public class Board {
     private GridPane chessboard;
     private Group piecesGroup = new Group();
 
+    private int amountOfPiecesLight;
+    private int amountOfPiecesDark;
+
     private Tile[][] boardTable = new Tile[TILES_PER_ROW][TILES_PER_COLUMN];
 
     public Board() {
+        this.amountOfPiecesLight = 0;
+        this.amountOfPiecesDark = 0;
         chessboard = new GridPane();
         for (int row_iterator = 0; row_iterator < TILES_PER_ROW; row_iterator++) {
             for (int column_iterator = 0; column_iterator < TILES_PER_COLUMN; column_iterator++) {
@@ -28,11 +33,14 @@ public class Board {
 
                 Piece piece = null;
 
-                if ((column_iterator >= TILES_PER_COLUMN - ROWS_OF_PIECES) && ((column_iterator + row_iterator) % 2 != 0))
+                if ((column_iterator >= TILES_PER_COLUMN - ROWS_OF_PIECES) && ((column_iterator + row_iterator) % 2 != 0)) {
                     piece = new Piece(PieceColor.LIGHT, row_iterator, column_iterator);
-                if ((column_iterator < ROWS_OF_PIECES) && ((column_iterator + row_iterator) % 2 != 0))
+                    amountOfPiecesLight++;
+                }
+                if ((column_iterator < ROWS_OF_PIECES) && ((column_iterator + row_iterator) % 2 != 0)) {
                     piece = new Piece(PieceColor.DARK, row_iterator, column_iterator);
-
+                    amountOfPiecesDark++;
+                }
                 if (piece != null) {
                     tile.setPiece(piece);
                     piecesGroup.getChildren().add(piece);
@@ -126,6 +134,13 @@ public class Board {
     }
 
     public void removeCapturedPiece(Piece piece) {
+        if (piece.getColor() == PieceColor.LIGHT) {
+            amountOfPiecesLight--;
+        }
+        else {
+            amountOfPiecesDark--;
+        }
+
         int x = piece.getX();
         int y = piece.getY();
         Tile tile = getTile(x, y);
@@ -143,5 +158,13 @@ public class Board {
 
     public Tile[][] getTiles() {
         return boardTable;
+    }
+
+    public int getAmountOfPiecesLight() {
+        return amountOfPiecesLight;
+    }
+
+    public int getAmountOfPiecesDark() {
+        return amountOfPiecesDark;
     }
 }

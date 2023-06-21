@@ -40,6 +40,7 @@ public class CheckersApp extends Application {
 
     public void initGame() {
         menu.hideButtons();
+        menu.showTimer();
         if (mode == GameMode.TWO_PLAYERS_ONE_COMPUTER) {
             twoPlayersOneComputerGame = new TwoPlayersOneComputerGame(board, menu);
             twoPlayersOneComputerGame.start();
